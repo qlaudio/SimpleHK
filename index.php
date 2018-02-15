@@ -9,21 +9,8 @@ $stmtconfig->execute();
 $config = $stmtconfig->fetch();
 $minrank=$config['login_minrank'];
 
-
-
-
-
-
-
-
-
-/*$config=mysqli_query($db,"SELECT * from hk_config LIMIT 1");
-$config_q=mysqli_fetch_assoc($config);
-$minrank=$config_q['login_minrank'];*/
-
 $password = hash('sha256',$_POST['password']);
 
-//$user_verify = $db->query("SELECT * FROM chocolatey_users_id WHERE mail='$username' && password='$password' LIMIT 1");
 $stmtuser_verify = $dbConnection->prepare('SELECT * FROM chocolatey_users_id WHERE mail = :username AND password= :password LIMIT 1');
 $stmtuser_verify->execute(array(
     'username'         => "$username",
@@ -32,18 +19,12 @@ $stmtuser_verify->execute(array(
 $user_verify = $stmtuser_verify->fetch();
 $user_verify_row_count = $stmtuser_verify->rowCount();
 
-
-/*$user_verify2 = $db->query("SELECT * FROM users WHERE mail='$username' && rank>=$minrank LIMIT 1");
-$user_fetch = mysqli_fetch_assoc($user_verify2);*/
-
 $stmtuser_verify2 = $dbConnection->prepare('SELECT * FROM users WHERE mail = :username AND rank >= :minrank LIMIT 1');
 $stmtuser_verify2->execute(array(
     'username'         => "$username",
     'minrank'          => "$minrank",
     ));
 $user_fetch = $stmtuser_verify2->fetch();
-
-
 
 if ($user_verify_row_count == 0) {
 	$error='1';
@@ -74,9 +55,7 @@ header ("Location: home.php");
 </head>
 <body>
     <div class="wrapper">
-	
 		<center>
-		
 			<form method="post" style="max-width: 500px;" class="form-signin box">
 				<h2 style="color:#585858;"><i style="font-size:40px; margin-bottom:5px;" class="fa fa-suitcase"></i><br>Hebbo Housekeeping</h2>
 				
@@ -86,7 +65,6 @@ header ("Location: home.php");
 					<p class='loginerror'><i class="fa fa-exclamation-circle"></i> <?php echo $message ?></p>
 				<?php } ?>
 				<hr class="hrsimple"></hr>
-				
 				
 				<p><i class="fa fa-user gris"></i><input  type="text" class="campoform" name="username" placeholder="Email" required="" autofocus="" style="padding:5px;" /></p>
 				<p><i class="fa fa-key gris"></i><input  type="password" class="campoform" name="password" placeholder="Contraseña" required="" style="padding:5px;"/></p>
