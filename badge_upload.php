@@ -3,8 +3,11 @@ require_once('core.php');
 require_once('session.php');
 $correcto=$_GET["correcto"];
 $badgecode=$_GET["placa"];
-$config=mysqli_query($db,"SELECT * from hk_config LIMIT 1");
-$config_q=mysqli_fetch_assoc($config);
+$stmtconfig = $dbConnection->prepare('SELECT * from hk_config LIMIT 1');
+$stmtconfig->execute();
+$config_q = $stmtconfig->fetch();
+
+
 $gallerybadges=$config_q['gallery_badges'];
 $badgeimage=$gallerybadges.$badgecode.'.gif';
 
@@ -75,21 +78,18 @@ $message = '<div class="alert alert-block alert-success"><button type="button" c
                                     <?php 
 									echo $message;
 									?>
-									
-									
-									
-									
-									
-									
-										<form action="upload.php" method="post" enctype="multipart/form-data">
-									Selecciona una imagen:
-									<input type="file" required name="fileToUpload" id="fileToUpload"><br>
-									<button name="submit" class="boton2 botonazul" type="submit">
+									<br>
+									<label class="col-sm-2 control-label no-padding-right" for="badgecode"> Selecciona una imagen: </label>
+										<div class="col-sm-9">
+											<form action="upload.php" method="post" enctype="multipart/form-data">
+											<input type="file" required name="fileToUpload" id="fileToUpload"><br><br>
+										</div>
+										<div class="col-md-offset-2 col-md-9">
+											<button name="submit" class="boton2 botonazul" type="submit">
 												<p style="margin:1px;"><i class="fa fa-check"></i> Subir Placa</p>
 											</button>
-									
-									</form>
-									
+											</form>
+										</div>
 											
 									
 									</div><!-- /.span -->

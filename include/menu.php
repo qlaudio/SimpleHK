@@ -233,6 +233,14 @@ $url = 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 						<b class="arrow"></b>
 
 						<ul class="submenu">
+						<li class="">
+								<a style="color:#298A08;" href="https://hebbo.cl/" target="_blank">
+									<i class="menu-icon"></i><i class="fa fa-arrow-alt-circle-right"></i>
+									Ir al Hotel
+								</a>
+
+								<b class="arrow"></b>
+							</li>
 							<li class="">
 								<a style="color:#DF0101;" href="desconectar.php">
 									<i class="menu-icon"></i><i class="fa fa-arrow-alt-circle-left"></i>
@@ -241,6 +249,7 @@ $url = 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 
 								<b class="arrow"></b>
 							</li>
+							
 						</ul>
 					</li>
 					
@@ -256,12 +265,8 @@ $url = 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 			</div>
 			
 			
-			
-			
-			
-			
 
-			<div class="main-content">
+			<div class="main-content" >
 				<div class="main-content-inner">
 				
 				

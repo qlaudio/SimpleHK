@@ -19,16 +19,29 @@ $timestamp = strtotime($fecha);
 $fechaactual = date('Y-m-d H:i:s',(strtotime("+0 Hours")));
 $timestampactual = strtotime($fechaactual);
 
+$stmtusuarioinfo = $dbConnection->prepare('SELECT * FROM users WHERE username= :id');
+$stmtusuarioinfo->execute(array('id' => "$username"));
+$usuarioinfo = $stmtusuarioinfo->fetch();
 
-$user_ban_a = mysqli_query($db,"SELECT * FROM users WHERE username='$username'");
-if (mysqli_num_rows($user_ban_a) == '0') {
+$usercount = $dbConnection->prepare('SELECT COUNT(*) FROM users WHERE username= :id');
+$usercount->bindParam(":id", $username);
+$usercount->execute();
+$usercount_count = $usercount->fetchColumn();
+
+if ($usercount_count == '0') {
 $message = '<div class="alert alert-block alert-info"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button><i class="ace-icon fa fa-times blue"></i> Este usuario no existe.</div>';
 }else{
-$user_ban_q = mysqli_fetch_assoc($user_ban_a);
-$user_avatar_a = mysqli_query($db,"SELECT * FROM users WHERE mail='$user_ban_q[mail]'");
-$i = 0; while($user_avatar_q = mysqli_fetch_assoc($user_avatar_a)){
-mysqli_query($db,"INSERT INTO bans (user_id,ban_reason,ban_expire,user_staff_id,timestamp) VALUES ('$user_avatar_q[id]','$reason','$timestamp','$user_q[id]','".time()."')");
-header ("Location: ban.php?saved=$w&usuario=$user_avatar_q[id]");
+$stmtusuarioinfo2 = $dbConnection->prepare('SELECT * FROM users WHERE mail= :mail');
+$stmtusuarioinfo2->execute(array('mail' => "$usuarioinfo[mail]"));
+while($ban_q = $stmtusuarioinfo2->fetch(PDO::FETCH_ASSOC)){
+	$stmtsave = $dbConnection->prepare("INSERT INTO  bans (user_id,ban_reason,ban_expire,user_staff_id,timestamp) VALUES (:id,:reason,:expire,:staff,:time)");
+	$stmtsave->bindParam(":id", $ban_q['id']);
+	$stmtsave->bindParam(":reason", $reason);
+	$stmtsave->bindParam(":expire", $timestamp);
+	$stmtsave->bindParam(":staff", $user_q['id']);
+	$stmtsave->bindValue(":time", $timestampactual);
+	$stmtsave->execute();
+header ("Location: ban.php?saved=$w&usuario=$usuarioinfo[id]");
 }}}
 ?>
 <!DOCTYPE html>
@@ -110,7 +123,7 @@ header ("Location: ban.php?saved=$w&usuario=$user_avatar_q[id]");
 										}
 										$in =
 '										{
-										"key": "DisconnectUser",
+										"key": "Disconnect",
 										"data": {
 											"user_id": "'."$usuario".'"
 										} }';

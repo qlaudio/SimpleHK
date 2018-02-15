@@ -63,18 +63,12 @@ $message = '<div class="alert alert-block alert-success"><button type="button" c
 							<div class="col-xs-12">
 								<!-- PAGE CONTENT BEGINS -->
 								
-
-
 									<div class="row">
 									<div class="col-xs-12">
 									
                                     <?php 
 									echo $message;
 									?>
-									
-									
-									
-									
 									
 									
 										<?php    
@@ -152,8 +146,7 @@ $lineanum2 = $_POST['lineanum']-1;
 
 
 ?>
-											
-									
+								
 									</form>
 	  
 	  <?php

@@ -64,65 +64,101 @@ require_once('session.php');
 												<i class="ace-icon fa fa-address-card" style="padding-top:2px"></i>
 											</div>
 
+											<?php
+											$stmtusercount = $dbConnection->prepare('SELECT COUNT(*) FROM users');
+											$stmtusercount->execute();
+											$usercount_count = $stmtusercount->fetchColumn();
+											?>
 											<div class="infobox-data">
-												<span class="infobox-data-number"><?php $users = mysqli_query($db,"SELECT * from users"); echo mysqli_num_rows($users); ?></span>
+												<span class="infobox-data-number"><?php echo $usercount_count; ?></span>
 												<div class="infobox-content">Usuarios Registrados</div>
 											</div>
 
 										</div>
 										</a>
-<a href="news.php">
+										
+										<?php
+											$stmtnewscount = $dbConnection->prepare('SELECT COUNT(*) FROM chocolatey_articles');
+											$stmtnewscount->execute();
+											$newscount_count = $stmtnewscount->fetchColumn();
+										?>
+										<a href="news.php">
 										<div class="infobox infobox-blue">
 											<div class="infobox-icon">
 												<i class="ace-icon fa fa-newspaper" style="padding-top:2px"></i>
 											</div>
 
 											<div class="infobox-data">
-												<span class="infobox-data-number"><?php $news = mysqli_query($db,"SELECT * from chocolatey_articles"); echo mysqli_num_rows($news); ?></span>
+												<span class="infobox-data-number"><?php echo $newscount_count; ?></span>
 												<div class="infobox-content">Noticias Creadas</div>
 											</div>
 										</div>
 										</a>
-<a href="rooms.php">
+										
+										<?php
+											$stmtroomscount = $dbConnection->prepare('SELECT COUNT(*) FROM rooms');
+											$stmtroomscount->execute();
+											$roomscount_count = $stmtroomscount->fetchColumn();
+										?>
+									<a href="rooms.php">
 										<div class="infobox infobox-pink">
 											<div class="infobox-icon">
 												<i class="ace-icon fa fa-key" style="padding-top:2px"></i>
 											</div>
 											<div class="infobox-data">
-												<span class="infobox-data-number"><?php $rooms = mysqli_query($db,"SELECT * from rooms"); echo mysqli_num_rows($rooms); ?></span>
+												<span class="infobox-data-number"><?php echo $roomscount_count; ?></span>
 												<div class="infobox-content">Salas Creadas</div>
 											</div>
 										</div>
 										</a>
 
-
+										<?php
+											$stmtonlinecount = $dbConnection->prepare('SELECT COUNT(*) FROM users WHERE online = :online');
+											$stmtonlinecount->execute(array('online' => 1 ));
+											$onlinecount_count = $stmtonlinecount->fetchColumn();
+										?>
 										<div class="infobox infobox-red">
 											<div class="infobox-icon">
 												<i class="ace-icon fa fa-globe" style="padding-top:2px"></i>
 											</div>
-
+										
 											<div class="infobox-data">
-												<span class="infobox-data-number"><?php $online = mysqli_query($db,"SELECT * FROM users WHERE online = '1'"); echo mysqli_num_rows($online); ?></span>
+												<span class="infobox-data-number"><?php echo $onlinecount_count; ?></span>
 												<div class="infobox-content">Usuarios Online</div>
 											</div>
 										</div>
-<a href="tienda.php">		
+										
+										<?php
+											$stmtcatacount = $dbConnection->prepare('SELECT  COUNT(*) FROM catalog_pages WHERE min_rank = :minrank AND enabled = :enabled AND visible = :visible');
+											$stmtcatacount->execute(array('minrank' => 1,
+																			'enabled' => 1,
+																			'visible' => 1));
+											$catacount_count = $stmtcatacount->fetchColumn();
+											
+										?>
+									<a href="tienda.php">		
 										<div class="infobox infobox-orange" >
 											<div class="infobox-icon">
 												<i class="ace-icon fa fa-shopping-cart" style="padding-top:4px"></i>
 											</div>
 											<div class="infobox-data" >
-												<span class="infobox-data-number"><?php $catalogo = mysqli_query($db,"SELECT * FROM catalog_pages WHERE min_rank = '1' AND enabled='1' AND visible='1'");  echo mysqli_num_rows($catalogo); ?></span>
+												<span class="infobox-data-number"><?php echo $catacount_count; ?></span>
 												<div class="infobox-content">Páginas en la Tienda</div>
 											</div>
 										</div>
 										</a>		
+																
+										<?php
+											$stmtguildcount = $dbConnection->prepare('SELECT COUNT(*) FROM guilds');
+											$stmtguildcount->execute();
+											$guildscount_count = $stmtguildcount->fetchColumn();
+										?>
 										<div class="infobox infobox-purple">
 											<div class="infobox-icon">
 												<i class="ace-icon fa fa-users"></i>
 											</div>
 											<div class="infobox-data">
-												<span class="infobox-data-number"><?php $groups = mysqli_query($db,"SELECT * from guilds"); echo mysqli_num_rows($groups); ?></span>
+												<span class="infobox-data-number"><?php echo $guildscount_count; ?></span>
 												<div class="infobox-content">Grupos Creados</div>
 											</div>
 										</div>

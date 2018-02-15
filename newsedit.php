@@ -2,11 +2,19 @@
 require_once('core.php');
 require_once('session.php');
 $news_id = $_GET['id'];
-$news_edit_a = mysqli_query($db,"SELECT * FROM chocolatey_articles WHERE id='$news_id' LIMIT 1");
-if (mysqli_num_rows($news_edit_a) == 0) {
+
+$stmtnewsid = $dbConnection->prepare('SELECT COUNT(*) FROM chocolatey_articles WHERE id= :id');
+$stmtnewsid->execute(array('id' => "$news_id"));
+$newsid = $stmtnewsid->fetchColumn();
+
+if ($newsid == 0) {
 header ("Location: news.php?error=$w");
 }
-$news_edit_q = mysqli_fetch_assoc($news_edit_a);
+
+$stmtnewsinfo = $dbConnection->prepare('SELECT * FROM chocolatey_articles WHERE id= :id');
+$stmtnewsinfo->execute(array('id' => "$news_id"));
+$news_edit_q = $stmtnewsinfo->fetch();
+
 if (isset($_POST['save'])) {
 $title = $_POST['title'];
 $category = $_POST['category'];
@@ -17,7 +25,22 @@ $author = $user_q['username'];
 $roomid = $_POST['roomid'];
 $image_url_thumb = $_POST['image_url_thumb'];
 $timestamp = date('Y-m-d H:i:s');
+
 mysqli_query($db,"UPDATE chocolatey_articles SET title='$title', categories='$category', description='$stext', content='$btext', imageUrl='$image_url', author='$author', roomId='$roomid', updated_at='$timestamp', thumbnailUrl='$image_url_thumb' WHERE id=$news_edit_q[id]");
+$stmtsave = $dbConnection->prepare("UPDATE chocolatey_articles SET title=:title, categories=:categories, description=:description, content=:content, imageUrl=:imageUrl, author=:author, roomId=:roomId, updated_at=:updated_at, thumbnailUrl=:thumbnailUrl WHERE id=:id");
+$stmtsave->bindParam(":title", $title);
+$stmtsave->bindParam(":categories", $category);
+$stmtsave->bindParam(":description", $stext);
+$stmtsave->bindParam(":content", $btext);
+$stmtsave->bindParam(":imageUrl", $image_url);
+$stmtsave->bindParam(":author", $author);
+$stmtsave->bindParam(":roomId", $roomid);
+$stmtsave->bindParam(":updated_at", $timestamp);
+$stmtsave->bindParam(":thumbnailUrl", $image_url_thumb);
+$stmtsave->bindParam(":id", $news_edit_q[id]);
+$stmtsave->execute();
+
+
 header ("Location: news.php?saved=$w");
 }
 ?>

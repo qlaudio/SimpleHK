@@ -1,8 +1,10 @@
 <?php
 require_once('core.php');
 require_once('session.php');
-$config=mysqli_query($db,"SELECT * from hk_config LIMIT 1");
-$config_q=mysqli_fetch_assoc($config);
+
+$stmtconfig = $dbConnection->prepare('SELECT * from hk_config LIMIT 1');
+$stmtconfig->execute();
+$config_q = $stmtconfig->fetch();
 $pageid=$config_q['catalog_page_badgeshop'];
 $gallerybadges=$config_q['gallery_badges'];
 
@@ -27,20 +29,49 @@ if (isset($_POST['post'])) {
 	$cost_points = $_POST['cost_points'];
 	$points_type = $_POST['points_type'];
 
-	$checkbaseexist=mysqli_query($db,"SELECT * FROM items_base WHERE item_name='$badgecode';");
-	$checkbaseexist_q=mysqli_fetch_assoc($checkbaseexist);
+	$checkbasedata = $dbConnection->prepare('SELECT * FROM items_base WHERE item_name=:badgecode');
+	$checkbasedata->bindParam(":badgecode", $badgecode);
+	$checkbasedata->execute();
+	$checkbaseexist_q = $checkbasedata->fetch();
 	$existid=$checkbaseexist_q['id'];
 	
-	if (mysqli_num_rows($checkbaseexist) != '0') {
-		mysqli_query($db,"INSERT INTO catalog_items (page_id,item_ids,catalog_name,cost_credits,cost_points,points_type) VALUES ('$pageid','$existid','$badgecode','$cost_credits','$cost_points','$points_type')");
+	$checkbaseexist = $dbConnection->prepare('SELECT COUNT(*) FROM items_base WHERE item_name=:badgecode');
+	$checkbaseexist->bindParam(":badgecode", $badgecode);
+	$checkbaseexist->execute();
+	$checkbaseexist_count = $checkbaseexist->fetchColumn();
+
+	if ($checkbaseexist_count != 0) { 
+		$stmtaddbadgecata = $dbConnection->prepare("INSERT INTO catalog_items (page_id,item_ids,catalog_name,cost_credits,cost_points,points_type) VALUES (:pageid,:existid,:badgecode,:cost_credits,:cost_points,:points_type)");
+		$stmtaddbadgecata->bindParam(":pageid", $pageid);
+		$stmtaddbadgecata->bindParam(":existid", $existid);
+		$stmtaddbadgecata->bindParam(":badgecode", $badgecode);
+		$stmtaddbadgecata->bindParam(":cost_credits", $cost_credits);
+		$stmtaddbadgecata->bindParam(":cost_points", $cost_points);
+		$stmtaddbadgecata->bindParam(":points_type", $points_type);
+		$stmtaddbadgecata->execute();
 		header("Location: catalog_badges.php?added=$w");
 	}
 	else{
-		mysqli_query($db,"INSERT INTO items_base (public_name,item_name,type) values ('$badgecode','$badgecode','b')");
-		$itembase=mysqli_query($db,"SELECT * FROM items_base WHERE public_name='$badgecode' LIMIT 1;");
-		$itembase_q=mysqli_fetch_assoc($itembase);
+		$tipo="b";
+		$stmtaddbadgebase = $dbConnection->prepare("INSERT INTO items_base (public_name,item_name,type) values (:badgecode,:badgecode2,:tipo)");
+		$stmtaddbadgebase->bindParam(":badgecode", $badgecode);
+		$stmtaddbadgebase->bindParam(":badgecode2", $badgecode);
+		$stmtaddbadgebase->bindParam(":tipo", $tipo);
+		$stmtaddbadgebase->execute();
+		
+		$stmtbadgebaseinfo = $dbConnection->prepare('SELECT * FROM items_base WHERE public_name=:badgecode LIMIT 1');
+		$stmtbadgebaseinfo->execute(array('badgecode' => "$badgecode"));
+		$itembase_q = $stmtbadgebaseinfo->fetch();
 		$newitemid=$itembase_q['id'];
-		mysqli_query($db,"INSERT INTO catalog_items (page_id,item_ids,catalog_name,cost_credits,cost_points,points_type) VALUES ('$pageid','$newitemid','$badgecode','$cost_credits','$cost_points','$points_type')");
+		
+		$stmtaddbadgecata = $dbConnection->prepare("INSERT INTO catalog_items (page_id,item_ids,catalog_name,cost_credits,cost_points,points_type) VALUES (:pageid,:existid,:badgecode,:cost_credits,:cost_points,:points_type)");
+		$stmtaddbadgecata->bindParam(":pageid", $pageid);
+		$stmtaddbadgecata->bindParam(":existid", $newitemid);
+		$stmtaddbadgecata->bindParam(":badgecode", $badgecode);
+		$stmtaddbadgecata->bindParam(":cost_credits", $cost_credits);
+		$stmtaddbadgecata->bindParam(":cost_points", $cost_points);
+		$stmtaddbadgecata->bindParam(":points_type", $points_type);
+		$stmtaddbadgecata->execute();
 		header("Location: catalog_badges.php?added=$w");
 	}
 

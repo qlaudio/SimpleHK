@@ -78,12 +78,17 @@ $message = '<div class="alert alert-block alert-success"><button type="button" c
 											</thead>
 											<tbody>
 											<?php
-											$rooms_a = mysqli_query($db,"SELECT * from rooms ORDER BY id DESC");
-											$i = 0; while($rooms_q = mysqli_fetch_assoc($rooms_a)){
-											if (isset($_POST['delete_'.$rooms_q['id'].''])) {
-											mysqli_query($db,"DELETE FROM rooms WHERE id=$rooms_q[id]");
-											header ("Location: rooms.php?deleted=$w");
-											}
+											
+											$stmtrooms = $dbConnection->prepare('SELECT * from rooms ORDER BY id DESC');
+											$stmtrooms -> execute();
+										
+											while ($rooms_q = $stmtrooms->fetch()){	
+												if (isset($_POST['delete_'.$rooms_q['id'].''])) {
+													$stmtdelnews = $dbConnection->prepare("DELETE FROM rooms WHERE id=:roomid");
+													$stmtdelnews->bindParam(":roomid", $rooms_q['id']);
+													$stmtdelnews->execute();
+												header ("Location: rooms.php?deleted=$w");
+												}
 											?>
 												<tr>
 												<td><?php echo $rooms_q['id']; ?></td>

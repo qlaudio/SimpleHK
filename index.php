@@ -1,20 +1,51 @@
 <?php
-$message =' ';
+$error="";
 require_once('core.php');
 if (isset($_POST['login'])) {
 $username = $_POST['username'];
 
-$config=mysqli_query($db,"SELECT * from hk_config LIMIT 1");
+$stmtconfig = $dbConnection->prepare('SELECT * FROM hk_config LIMIT 1');
+$stmtconfig->execute();
+$config = $stmtconfig->fetch();
+$minrank=$config['login_minrank'];
+
+
+
+
+
+
+
+
+
+/*$config=mysqli_query($db,"SELECT * from hk_config LIMIT 1");
 $config_q=mysqli_fetch_assoc($config);
-$minrank=$config_q['login_minrank'];
+$minrank=$config_q['login_minrank'];*/
 
 $password = hash('sha256',$_POST['password']);
 
-$user_verify = $db->query("SELECT * FROM chocolatey_users_id WHERE mail='$username' && password='$password' LIMIT 1");
-$user_verify2 = $db->query("SELECT * FROM users WHERE mail='$username' && rank>=$minrank LIMIT 1");
-$user_fetch = mysqli_fetch_assoc($user_verify2);
+//$user_verify = $db->query("SELECT * FROM chocolatey_users_id WHERE mail='$username' && password='$password' LIMIT 1");
+$stmtuser_verify = $dbConnection->prepare('SELECT * FROM chocolatey_users_id WHERE mail = :username AND password= :password LIMIT 1');
+$stmtuser_verify->execute(array(
+    'username'         => "$username",
+    'password'          => "$password",
+    ));
+$user_verify = $stmtuser_verify->fetch();
+$user_verify_row_count = $stmtuser_verify->rowCount();
 
-if (mysqli_num_rows($user_verify) == 0) {
+
+/*$user_verify2 = $db->query("SELECT * FROM users WHERE mail='$username' && rank>=$minrank LIMIT 1");
+$user_fetch = mysqli_fetch_assoc($user_verify2);*/
+
+$stmtuser_verify2 = $dbConnection->prepare('SELECT * FROM users WHERE mail = :username AND rank >= :minrank LIMIT 1');
+$stmtuser_verify2->execute(array(
+    'username'         => "$username",
+    'minrank'          => "$minrank",
+    ));
+$user_fetch = $stmtuser_verify2->fetch();
+
+
+
+if ($user_verify_row_count == 0) {
 	$error='1';
 $message = 'Email o contraseña incorrectos.';
 }else{
@@ -47,7 +78,7 @@ header ("Location: home.php");
 		<center>
 		
 			<form method="post" style="max-width: 500px;" class="form-signin box">
-				<h2 style="color:#444444;"><i style="font-size:40px; margin-bottom:5px;" class="fa fa-suitcase"></i><br>Hebbo Housekeeping</h2>
+				<h2 style="color:#585858;"><i style="font-size:40px; margin-bottom:5px;" class="fa fa-suitcase"></i><br>Hebbo Housekeeping</h2>
 				
 				<p style="color:#545454; font-size:16px;">Ingresa a la Administración de Hebbo Hotel</p>
 				<?php

@@ -11,7 +11,20 @@ $author = $user_q['username'];
 $roomid = $_POST['roomid'];
 $image_url_thumb = $_POST['image_url_thumb'];
 $timestamp = date('Y-m-d H:i:s');
-mysqli_query($db,"INSERT INTO chocolatey_articles (title,description,content,categories,imageUrl,thumbnailUrl,author,roomId,created_at) VALUES ('$title','$stext','$btext','$category','$image_url','$image_url_thumb','$author','$roomid','$timestamp')");
+
+$stmtaddnews = $dbConnection->prepare("INSERT INTO chocolatey_articles (title,description,content,categories,imageUrl,thumbnailUrl,author,roomId,created_at) VALUES (:title,:stext,:btext,:category,:image_url,:image_url_thumb,:author,:roomid,:timestamp)");
+$stmtaddnews->bindParam(":title", $title);
+$stmtaddnews->bindParam(":stext", $stext);
+$stmtaddnews->bindParam(":btext", $btext);
+$stmtaddnews->bindParam(":category", $category);
+$stmtaddnews->bindParam(":image_url", $image_url);
+$stmtaddnews->bindParam(":image_url_thumb", $image_url_thumb);
+$stmtaddnews->bindParam(":author", $author);
+$stmtaddnews->bindParam(":roomid", $roomid);
+$stmtaddnews->bindParam(":timestamp", $timestamp);
+$stmtaddnews->execute();
+
+
 header("Location: news.php?created=$w");
 }
 ?>

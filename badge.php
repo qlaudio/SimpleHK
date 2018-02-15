@@ -1,24 +1,39 @@
 <?php
 require_once('core.php');
 require_once('session.php');
-if (isset($_POST['give'])) {
 
+if (isset($_POST['give'])) {
+	$username = $_POST['username'];
+	$badge = $_POST['badge'];
+	$stmtusuario = $dbConnection->prepare('SELECT id,online FROM users WHERE username=:username');
+	$stmtusuario->execute(array('username' => "$username"));
+	$user_j_q = $stmtusuario->fetch();
+
+	$user_exist = $dbConnection->prepare('SELECT COUNT(*) FROM users WHERE username=:username');
+	$user_exist->bindParam(":username", $username);
+	$user_exist->execute();
+	$user_exist = $user_exist->fetchColumn();
 	
-$username = $_POST['username'];
-$badge = $_POST['badge'];
-$user_j_a = mysqli_query($db,"SELECT * FROM users WHERE username='$username'");
-$user_j_q = mysqli_fetch_assoc($user_j_a);
-$badge_j_a = mysqli_query($db,"SELECT * FROM users_badges WHERE user_id='$user_j_q[id]' AND badge_code='$badge'");
-if (mysqli_num_rows($user_j_a) == '0') {
+	$badge_exist = $dbConnection->prepare('SELECT COUNT(*) FROM users_badges WHERE user_id=:id AND badge_code=:badge');
+	$badge_exist->bindParam(":id", $user_j_q['id']);
+	$badge_exist->bindValue(":badge", $badge);
+	$badge_exist->execute();
+	$badge_exist = $badge_exist->fetchColumn();
+	
+	
+if ($user_exist == '0') {
 $message = '<div class="alert alert-block alert-info"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button><i class="ace-icon fa fa-info-circle blue"></i> Este usuario no existe.</div>';
-}else{
-if (mysqli_num_rows($badge_j_a) != '0') {
+}
+else{
+if ($badge_exist != '0') {
 $message = '<div class="alert alert-block alert-info"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button><i class="ace-icon fa fa-info-circle blue"></i> Este usuario ya posee la placa.</div>';
 }else{
 
 $message = '<div class="alert alert-block alert-success"><button type="button" class="close" data-dismiss="sucess"><i class="ace-icon fa fa-times"></i></button><i class="ace-icon fa fa-check green"></i> Usuario encontrado. Ejecutando los comandos respectivos...</div>';
 $correcto=1;
-}}}
+}
+}
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -107,10 +122,16 @@ $correcto=1;
 										{ echo socket_strerror( socket_last_error($socket) ); }
 										$out = socket_read($socket, 2048);
 										echo "> Respuesta:" . $out;	
-									
-										if ($user_j_q['online']=='0'){
-											mysqli_query($db,"INSERT INTO users_badges (user_id, badge_code) VALUES ('$user_j_q[id]','$badge')");
-											echo "<br>> El usuario está desconectado. Se ha enviado la placa a su inventario.";
+										
+										if ($user_j_q['online'] == '0'){
+											
+												$stmtgivebadge = $dbConnection->prepare("INSERT INTO users_badges (user_id,badge_code) VALUES (:userid,:badge)");
+												$stmtgivebadge->bindParam(":userid", $user_j_q['id']);
+												$stmtgivebadge->bindParam(":badge", $badge);
+												$stmtgivebadge->execute();
+											
+											
+											echo "<br> El usuario está desconectado. Se ha enviado la placa a su inventario.";
 										}
 									
 										else{

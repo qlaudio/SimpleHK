@@ -91,7 +91,12 @@ require_once('session.php');
 										$placa = $_POST['badgecode'];
 										$log="Edita texto de $placa";
 										$usuario=$user_q['username'];
-										mysqli_query($db,"INSERT INTO hk_logs (user,log) VALUES ('$usuario','$log')");
+										
+										$stmtlog = $dbConnection->prepare("INSERT INTO hk_logs (user,log) VALUES (:usuario,:log)");
+										$stmtlog->bindParam(":usuario", $usuario);
+										$stmtlog->bindParam(":log", $log);
+										$stmtlog->execute();
+										
 										header ("Location: badge_texts.php?placa=$placa");
 									}
 				?>

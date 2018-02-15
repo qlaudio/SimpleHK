@@ -7,9 +7,6 @@ $message = '<div class="alert alert-block alert-info"><button type="button" clas
 if ($_GET['saved'] == $w) {
 $message = '<div class="alert alert-block alert-success"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button><i class="ace-icon fa fa-check green"></i> Usuario editado correctamente.</div>';
 }
-if ($_GET['deleted'] == $w) {
-$message = '<div class="alert alert-block alert-success"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button><i class="ace-icon fa fa-check green"></i> Usuario eliminado correctamente.</div>';
-}
 if ($_GET['badgesaved'] == $w) {
 $message = '<div class="alert alert-block alert-success"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button><i class="ace-icon fa fa-check green"></i> Placa dada correctamente.</div>';
 }
@@ -101,18 +98,29 @@ $i=1;
 											if (isset($_POST['search'])) {
 											$searchcaption = $_POST['searchcaption'];
 											
-											$users_a = mysqli_query($db,"SELECT * from users WHERE username LIKE '%$searchcaption%' ORDER BY last_login DESC LIMIT 500");
-											while($users_q = mysqli_fetch_assoc($users_a)){
-											if (isset($_POST['delete_'.$users_q['id'].''])) {
-											mysqli_query($db,"DELETE FROM chocolatey_users WHERE user_id=$users_q[id]");
-											mysqli_query($db,"DELETE FROM users WHERE id=$users_q[id]");
-											header ("Location: users.php?deleted=$w");
-											}
-											$userid=$users_q['id'];
+											$stmtsearch = $dbConnection->prepare('SELECT * from users WHERE username LIKE ? LIMIT 100');
+											$stmtsearch -> bindValue(1, "%$searchcaption%", PDO::PARAM_STR);
+											$stmtsearch -> execute();
+										
+											//$users_a = mysqli_query($db,"SELECT * from users WHERE username LIKE '%$searchcaption%' ORDER BY last_login DESC LIMIT 500");
+											
+											while ($row = $stmtsearch->fetch(PDO::FETCH_ASSOC))
+											{
+												$id = $row['id'];
+												$nombre = $row['username'];
+												$email = $row['mail'];
+												$creditos = $row['credits'];
+												$rango = $row['rank'];
+												$ip = $row['ip_current'];
+												$registro = $row['account_created'];
+												$login = $row['last_online'];
+											
 											$diamantes=0;
 											$cacahuates=0;
-											$currency = mysqli_query($db,"SELECT * FROM users_currency WHERE user_id='$userid';");
-											while($currency_q = mysqli_fetch_assoc($currency)){
+											$currency = $dbConnection->prepare('SELECT * FROM users_currency WHERE user_id= :id');
+											$currency->execute(array('id' => "$id"));
+														
+											while($currency_q = $currency->fetch(PDO::FETCH_ASSOC)){
 											if ($currency_q['type']=="102") {
 											$cacahuates=$currency_q['amount'];
 											}
@@ -124,19 +132,19 @@ $i=1;
 											?>
 											
 												<tr>
-												<td><?php echo $users_q['id'];?></td>
-													<td><?php echo $users_q['username'];?></td>
-													<td><?php echo $users_q['mail'];?></td>
-													<td><?php echo $users_q['credits'];?></td>
+												<td><?php echo $id;?></td>
+													<td><?php echo $nombre;?></td>
+													<td><?php echo $email;?></td>
+													<td><?php echo $creditos;?></td>
 													<td><?php echo $diamantes;?></td>
 													<td><?php echo $cacahuates;?></td>
-													<td><?php echo $users_q['rank'];?></td>
-													<td><?php echo $users_q['ip_current']; ?></td>
-													<td><?php echo date('d/m/Y', $users_q['account_created']); ?></td>
-													<td><?php echo date('d/m/Y', $users_q['last_login']); ?></td>
+													<td><?php echo $rango;?></td>
+													<td><?php echo $ip; ?></td>
+													<td><?php echo date('d/m/Y', $registro); ?></td>
+													<td><?php echo date('d/m/Y', $login); ?></td>
 													<td>
 													<form method="post">
-															<center><button formaction="useredit.php?user=<?php echo $users_q['id']; ?>" class="boton botonazul" style="width:100%;">
+															<center><button formaction="useredit.php?user=<?php echo $id; ?>" class="boton botonazul" style="width:100%;">
 																<i class="iconogrande menu-icon fa fa-pencil-alt"></i>
 															</button></center>
 													</form>
@@ -148,18 +156,28 @@ $i=1;
 											}
 											} 
 											else{
-											$users_a = mysqli_query($db,"SELECT * from users ORDER BY last_login DESC LIMIT 500");
-											while($users_q = mysqli_fetch_assoc($users_a)){
-											if (isset($_POST['delete_'.$users_q['id'].''])) {
-											mysqli_query($db,"DELETE FROM chocolatey_users WHERE user_id=$users_q[id]");
-											mysqli_query($db,"DELETE FROM users WHERE id=$users_q[id]");
-											header ("Location: users.php?deleted=$w");
-											}
-											$userid=$users_q['id'];
+											$stmtuser = $dbConnection->prepare('SELECT * from users ORDER BY last_login DESC LIMIT 200');
+											$stmtuser -> execute();
+										
+											//$users_a = mysqli_query($db,"SELECT * from users WHERE username LIKE '%$searchcaption%' ORDER BY last_login DESC LIMIT 500");
+											
+											while ($row = $stmtuser->fetch())
+											{
+												$id = $row['id'];
+												$nombre = $row['username'];
+												$email = $row['mail'];
+												$creditos = $row['credits'];
+												$rango = $row['rank'];
+												$ip = $row['ip_current'];
+												$registro = $row['account_created'];
+												$login = $row['last_online'];
+											
 											$diamantes=0;
 											$cacahuates=0;
-											$currency = mysqli_query($db,"SELECT * FROM users_currency WHERE user_id='$userid';");
-											while($currency_q = mysqli_fetch_assoc($currency)){
+											$currency = $dbConnection->prepare('SELECT * FROM users_currency WHERE user_id= :id');
+											$currency->execute(array('id' => "$id"));
+														
+											while($currency_q = $currency->fetch(PDO::FETCH_ASSOC)){
 											if ($currency_q['type']=="102") {
 											$cacahuates=$currency_q['amount'];
 											}
@@ -171,19 +189,19 @@ $i=1;
 
 											?>
 												<tr>
-												<td><?php echo $users_q['id'];?></td>
-													<td><?php echo $users_q['username'];?></td>
-													<td><?php echo $users_q['mail'];?></td>
-													<td><?php echo $users_q['credits'];?></td>
+												<td><?php echo $id;?></td>
+													<td><?php echo $nombre;?></td>
+													<td><?php echo $email;?></td>
+													<td><?php echo $creditos;?></td>
 													<td><?php echo $diamantes;?></td>
 													<td><?php echo $cacahuates;?></td>
-													<td><?php echo $users_q['rank'];?></td>
-													<td><?php echo $users_q['ip_current']; ?></td>
-													<td><?php echo date('d/m/Y', $users_q['account_created']); ?></td>
-													<td><?php echo date('d/m/Y', $users_q['last_login']); ?></td>
+													<td><?php echo $rango;?></td>
+													<td><?php echo $ip; ?></td>
+													<td><?php echo date('d/m/Y', $registro); ?></td>
+													<td><?php echo date('d/m/Y', $login); ?></td>
 													<td>
 													<form method="post">
-															<center><button formaction="useredit.php?user=<?php echo $users_q['id']; ?>" class="boton botonazul" style="width:100%;">
+															<center><button formaction="useredit.php?user=<?php echo $id; ?>" class="boton botonazul" style="width:100%;">
 																<i class="iconogrande menu-icon fa fa-pencil-alt"></i>
 															</button></center>
 													</form>

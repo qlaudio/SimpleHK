@@ -62,7 +62,7 @@ $message = '<div class="alert alert-block alert-success"><button type="button" c
 <div class="row">
 									<div class="col-xs-12">
 									<div class="rwd">
-										<table id="simple-table" class="table table-striped table-bordered table-hover">
+										<table id="simple-table" style="font-size:12px;" class="table table-striped table-bordered table-hover">
 											<thead>
 												<tr>
 												<th>ID</th>
@@ -74,8 +74,11 @@ $message = '<div class="alert alert-block alert-success"><button type="button" c
 											</thead>
 											<tbody>
 											<?php
-											$bans_a = mysqli_query($db,"SELECT * from bans ORDER BY id DESC");
-											while($bans_q = mysqli_fetch_assoc($bans_a)){
+											$stmtbans = $dbConnection->prepare('SELECT * from bans ORDER BY id DESC LIMIT 200');
+											$stmtbans -> execute();
+											
+											while ($bans_q = $stmtbans->fetch())
+											{
 											
 											?>
 												<tr>
@@ -84,29 +87,33 @@ $message = '<div class="alert alert-block alert-success"><button type="button" c
 														<?php 
 														$banid=$bans_q['id'];
 														$userid=$bans_q['user_id'];
-														$users_a = mysqli_query($db,"SELECT * from users WHERE id='$userid'");
-														$users_q = mysqli_fetch_assoc($users_a);
+														
+														$stmtuser = $dbConnection->prepare('SELECT * from users WHERE id=:userid');
+														$stmtuser->execute(array('userid' => "$userid"));
+														$users_q = $stmtuser->fetch();
+														
 														echo $users_q['username']; 
 														?>
 													</td>
 													<td><?php echo $bans_q['ban_reason']; ?></td>
-													<td><?php echo date('m/d/Y H:i', $bans_q['ban_expire']); ?></td>
+													<td><?php echo date('d/m/Y H:i', $bans_q['ban_expire']); ?></td>
 													<td>
 													<form method="post">
 															<center><button name="delete_<?php echo $bans_q['id']; ?>" style="width:100%;" class="boton botonrojo">
 																<i class="iconogrande menu-icon fa fa-trash-alt"></i>
 															</button><br>
-
-															
 													</form>
 														</div>
 													</td>
 												</tr>
 											<?php 
 											if (isset($_POST['delete_'.$banid.''])) {
-											mysqli_query($db,"DELETE FROM bans WHERE id='$banid'");
+												
+												$stmtdeleteban = $dbConnection->prepare('DELETE FROM bans WHERE id=:banid');
+												$stmtdeleteban->execute(array('banid' => "$banid"));
+												$deleteban = $stmtdeleteban->fetch();
+												
 											header ("Location: banlist.php?deleted=1");
-											echo $banid;
 											}
 											} ?>
 											</tbody>

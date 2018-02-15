@@ -42,8 +42,13 @@ if ($uploadOk == 0) {
 		$usuario=$user_q['username'];
 		$porciones = explode(".",basename( $_FILES["fileToUpload"]["name"]));
 		$nombrearch=$porciones[0]; 
-		$log="Ha subido la placa".basename( $_FILES["fileToUpload"]["name"]);
-		mysqli_query($db,"INSERT INTO hk_logs (user,log) VALUES ('$usuario','$log')");
+		$log="Ha subido la placa ".basename( $_FILES["fileToUpload"]["name"]);
+		
+		$stmtlog = $dbConnection->prepare("INSERT INTO hk_logs (user,log) VALUES (:usuario,:log)");
+		$stmtlog->bindParam(":usuario", $usuario);
+		$stmtlog->bindParam(":log", $log);
+		$stmtlog->execute();
+		
 		header ("Location: badge_texts_add.php?placa=".$nombrearch);
 		
     } else {

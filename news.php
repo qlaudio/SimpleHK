@@ -85,12 +85,26 @@ $message = '<div class="alert alert-block alert-success"><button type="button" c
 											</thead>
 											<tbody>
 											<?php
-											$news_a = mysqli_query($db,"SELECT * from chocolatey_articles");
-											$i = 0; while($news_q = mysqli_fetch_assoc($news_a)){
+											
+											
+											$stmtnews = $dbConnection->prepare('SELECT * from chocolatey_articles ORDER BY id DESC LIMIT 100');
+											$stmtnews -> execute();
+										
+											//$users_a = mysqli_query($db,"SELECT * from users WHERE username LIKE '%$searchcaption%' ORDER BY last_login DESC LIMIT 500");
+											
+											while ($news_q = $stmtnews->fetch()){
 											
 											if (isset($_POST['delete_'.$news_q['id'].''])) {
-											mysqli_query($db,"DELETE FROM chocolatey_articles WHERE id=$news_q[id];");
-											mysqli_query($db,"INSERT INTO `hk_articles_backup`(`title`, `description`, `content`, `author`, `categories`, `imageUrl`, `thumbnailUrl`, `roomId`, `created_at`, `updated_at`) SELECT `title`, `description`, `content`, `author`, `categories`, `imageUrl`, `thumbnailUrl`, `roomId`, `created_at`, `updated_at` FROM chocolatey_articles WHERE id=$news_q[id];");
+												
+												$stmtbackupnews = $dbConnection->prepare("INSERT INTO hk_articles_backup (title,description,content,author,categories,imageUrl,thumbnailUrl,roomId,created_at,updated_at) SELECT title, description, content, author, categories, imageUrl, thumbnailUrl, roomId, created_at, updated_at FROM chocolatey_articles WHERE id=:newsid2");
+												$stmtbackupnews->bindParam(":newsid2", $news_q['id']);
+												$stmtbackupnews->execute();
+												
+												$stmtdelnews = $dbConnection->prepare("DELETE FROM chocolatey_articles WHERE id=:newsid");
+												$stmtdelnews->bindParam(":newsid", $news_q['id']);
+												$stmtdelnews->execute();
+																				
+											
 											header ("Location: news.php?deleted=$w");
 											}
 											?>

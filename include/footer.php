@@ -1,44 +1,22 @@
 <?php
 require_once('core.php');
 require_once('session.php');
-$hotel_a = mysql_query("SELECT * FROM heliocms_hotel");
-$hotel_q = mysql_fetch_assoc($hotel_a);
-if ($_GET['saved'] == $w) {
-$message = '<div class="alert alert-block alert-success"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button><i class="ace-icon fa fa-check green"></i> Configuración guardada correctamente.</div>';
-}
-if (isset($_POST['save'])) {
-$sitename = $_POST['sitename'];
-$site = $_POST['site'];
-$aka = $_POST['aka'];
-$avatarimage = $_POST['avatarimage'];
-mysql_query("UPDATE heliocms_hotel SET sitename='$sitename', site='$site', aka='$aka', avatarimage='$avatarimage'");
-header ("Location: hotel.php?saved=$w");
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 		<meta charset="utf-8" />
-		<title>Modifica hotel</title>
+		<title>Housekeeping - Panel de Administración</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 		<link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon">
 		<link rel="stylesheet" href="assets/css/bootstrap.min.css" />
-		<link rel="stylesheet" href="http://fortawesome.github.io/Font-Awesome/assets/font-awesome/css/font-awesome.css">
+		<link href="assets/css/fontawesome-all.css" rel="stylesheet">
+		<link href="assets/css/hebbo.css" rel="stylesheet">
 		<link rel="stylesheet" href="assets/fonts/fonts.googleapis.com.css" />
 		<link rel="stylesheet" href="assets/css/ace.min.css" class="ace-main-stylesheet" id="main-ace-style" />
-		<!--[if lte IE 9]>
-			<link rel="stylesheet" href="assets/css/ace-part2.min.css" class="ace-main-stylesheet" />
-		<![endif]-->
-		<!--[if lte IE 9]>
-		  <link rel="stylesheet" href="assets/css/ace-ie.min.css" />
-		<![endif]-->
 		<script src="assets/js/ace-extra.min.js"></script>
-		<!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
-		<!--[if lte IE 8]>
-		<script src="assets/js/html5shiv.min.js"></script>
-		<script src="assets/js/respond.min.js"></script>
-		<![endif]-->
+
 	</head>
 
 	<body class="no-skin">
@@ -49,7 +27,7 @@ header ("Location: hotel.php?saved=$w");
 
 			<div class="navbar-container" id="navbar-container">
 				<button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler" data-target="#sidebar">
-					<span class="sr-only">Toggle sidebar</span>
+					<span class="sr-only">Navegación</span>
 
 					<span class="icon-bar"></span>
 
@@ -59,12 +37,7 @@ header ("Location: hotel.php?saved=$w");
 				</button>
 
 				<div class="navbar-header pull-left">
-					<a href="home.php" class="navbar-brand">
-						<small>
-							<i class="fa fa-diamond"></i>
-							HouseKeeping HC v5.1 (Tradotto da L4BB0)
-						</small>
-					</a>
+					<a href="home.php" class="navbar-brand"><small><i class="fa fa-diamond"></i> Administración de Hebbo (Provisoria) </small></a>
 				</div>
 
 				<div class="navbar-buttons navbar-header pull-right" role="navigation">
@@ -74,7 +47,7 @@ header ("Location: hotel.php?saved=$w");
 						<li class="light-blue">
 							<a data-toggle="dropdown" href="#" class="dropdown-toggle">
 								<span class="user-info">
-									<small>Benvenuto</small>
+									<small>Bienvenido </small>
 									<?php echo $user_q['username']; ?>
 								</span>
 							</a>
@@ -95,10 +68,10 @@ header ("Location: hotel.php?saved=$w");
 				</script>
 
 				<ul class="nav nav-list">
-					<li class="">
+					<li class="active">
 						<a href="home.php">
 							<i class="menu-icon fa fa-tachometer"></i>
-							<span class="menu-text"> Dashboard </span>
+							<span class="menu-text">Panel de Inicio</span>
 						</a>
 
 						<b class="arrow"></b>
@@ -107,7 +80,7 @@ header ("Location: hotel.php?saved=$w");
 					<li class="">
 						<a href="#" class="dropdown-toggle">
 							<i class="menu-icon fa fa-users"></i>
-							<span class="menu-text"> Utenti </span>
+							<span class="menu-text">Usuarios</span>
 
 							<b class="arrow fa fa-angle-down"></b>
 						</a>
@@ -115,28 +88,20 @@ header ("Location: hotel.php?saved=$w");
 						<b class="arrow"></b>
 
 						<ul class="submenu">
-							<li class="">
-								<a href="users.php">
-									<i class="menu-icon fa fa-caret-right"></i>
-									Modifica o Elimina un Utente
-								</a>
+							<li class=""><a href="users.php"><i class="menu-icon fa fa-caret-right"></i>Modificar Usuarios</a>
 
 								<b class="arrow"></b>
 							</li>
 
-							<li class="">
-								<a href="ban.php">
-									<i class="menu-icon fa fa-caret-right"></i>
-									Banna un Utente
-								</a>
+							<li class=""><a href="ban.php"><i class="menu-icon fa fa-caret-right"></i>Banear Usuarios</a>
 
 								<b class="arrow"></b>
 							</li>
-																					<li class=""><a href="forgotten.php"><i class="menu-icon fa fa-caret-right"></i>Password da Recuperare</a>
+							<li class=""><a href="forgotten.php"><i class="menu-icon fa fa-caret-right"></i>Recuperación de Contraseñas</a>
 
 								<b class="arrow"></b>
 							</li>
-																																																	<li class=""><a href="badge.php"><i class="menu-icon fa fa-caret-right"></i>Invia Badge</a>
+																																										<li class=""><a href="badge.php"><i class="menu-icon fa fa-caret-right"></i>Invia Badge</a>
 
 								<b class="arrow"></b>
 							</li>
@@ -145,7 +110,7 @@ header ("Location: hotel.php?saved=$w");
 										<li class="">
 						<a href="#" class="dropdown-toggle">
 							<i class="menu-icon fa fa-newspaper-o"></i>
-							<span class="menu-text"> News </span>
+							<span class="menu-text"> Noticias </span>
 
 							<b class="arrow fa fa-angle-down"></b>
 						</a>
@@ -156,7 +121,7 @@ header ("Location: hotel.php?saved=$w");
 							<li class="">
 								<a href="newsadd.php">
 									<i class="menu-icon fa fa-caret-right"></i>
-									Crea una News
+									Redactar Noticia
 								</a>
 
 								<b class="arrow"></b>
@@ -165,7 +130,7 @@ header ("Location: hotel.php?saved=$w");
 							<li class="">
 								<a href="news.php">
 									<i class="menu-icon fa fa-caret-right"></i>
-									Modifica o Elimin News
+									Editar Noticias
 								</a>
 
 								<b class="arrow"></b>
@@ -186,14 +151,14 @@ header ("Location: hotel.php?saved=$w");
 							<li class="">
 								<a href="rooms.php">
 									<i class="menu-icon fa fa-caret-right"></i>
-									Modifica o Elimina Stanza
+									Modifica o Elimina una Stanza
 								</a>
 
 								<b class="arrow"></b>
 							</li>
 						</ul>
 					</li>
-																									<li class="active">
+																									<li class="">
 						<a href="#" class="dropdown-toggle">
 							<i class="menu-icon fa fa-cogs"></i>
 							<span class="menu-text"> Hotel </span>
@@ -212,46 +177,16 @@ header ("Location: hotel.php?saved=$w");
 
 								<b class="arrow"></b>
 							</li>
-														<li class="active">
+														<li class="">
 								<a href="hotel.php">
 									<i class="menu-icon fa fa-caret-right"></i>
 									Modifica hotel
 								</a>
 
-								<b class="arrow"></b>
-							</li>
+								<b class="arrow"></b>							</li>
 						</ul>
 					</li>
-											<li class="">
-						<a href="#" class="dropdown-toggle">
-							<i class="menu-icon fa fa-cube"></i>
-							<span class="menu-text"> Tienda de placas </span>
-
-							<b class="arrow fa fa-angle-down"></b>
-						</a>
-
-						<b class="arrow"></b>
-
-						<ul class="submenu">
-							<li class="">
-								<a href="badgestore.php">
-									<i class="menu-icon fa fa-caret-right"></i>
-									Modifica o Eliminauna placa
-								</a>
-
-								<b class="arrow"></b>
-							</li>
-														<li class="">
-								<a href="badgestoreadd.php">
-									<i class="menu-icon fa fa-caret-right"></i>
-									Añadir una placa
-								</a>
-
-								<b class="arrow"></b>
-							</li>
-						</ul>
-					</li>
-				</ul>
+				</ul><!-- /.nav-list -->
 
 				<div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
 					<i class="ace-icon fa fa-angle-double-left" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
@@ -272,9 +207,10 @@ header ("Location: hotel.php?saved=$w");
 						<ul class="breadcrumb">
 							<li>
 								<i class="ace-icon fa fa-home home-icon"></i>
-								<a href="home.php">Home</a>
+								<a href="#">
+Home</a>
 							</li>
-							<li class="active">Hotel</li>
+							<li class="active">Panel de Inicio</li>
 						</ul><!-- /.breadcrumb -->
 					</div>
 
@@ -282,10 +218,10 @@ header ("Location: hotel.php?saved=$w");
 
 						<div class="page-header">
 							<h1>
-								Modifica hotel
+								Panel de Inicio
 								<small>
 									<i class="ace-icon fa fa-angle-double-right"></i>
-									Modifica i dati hotel
+									Resumen de Hebbo Hotel
 								</small>
 							</h1>
 						</div><!-- /.page-header -->
@@ -293,43 +229,84 @@ header ("Location: hotel.php?saved=$w");
 						<div class="row">
 							<div class="col-xs-12">
 								<!-- PAGE CONTENT BEGINS -->
-<?php echo $message; ?>
-<div class="row">
-									<div class="col-xs-12">
-									<form method="post" class="form-horizontal">
-                                    <div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="sitename">Nome hotel:</label>
-										<div class="col-sm-9">
-											<input type="text" value="<?php echo $hotel_q['sitename']; ?>" name="sitename" id="sitename" class="col-xs-10 col-sm-5" required>
+
+								<div class="row">
+									<div class="space-6"></div>
+<a href="users.php">
+									<div class="col-sm-7 infobox-container">
+										<div class="infobox infobox-green">
+											<div class="infobox-icon">
+												<i class="ace-icon fa fa-user"></i>
+											</div>
+
+											<div class="infobox-data">
+												<span class="infobox-data-number"><?php $users = mysqli_query($db,"SELECT * from users"); echo mysqli_num_rows($users); ?></span>
+												<div class="infobox-content">Usuarios Registrados</div>
+											</div>
+
 										</div>
+										</a>
+<a href="news.php">
+										<div class="infobox infobox-blue">
+											<div class="infobox-icon">
+												<i class="ace-icon fa fa-newspaper-o"></i>
+											</div>
+
+											<div class="infobox-data">
+												<span class="infobox-data-number"><?php $news = mysqli_query($db,"SELECT * from chocolatey_articles"); echo mysqli_num_rows($news); ?></span>
+												<div class="infobox-content">Noticias Creadas</div>
+											</div>
+										</div>
+										</a>
+<a href="rooms.php">
+										<div class="infobox infobox-pink">
+											<div class="infobox-icon">
+												<i class="ace-icon fa fa-home"></i>
+											</div>
+											<div class="infobox-data">
+												<span class="infobox-data-number"><?php $rooms = mysqli_query($db,"SELECT * from rooms"); echo mysqli_num_rows($rooms); ?></span>
+												<div class="infobox-content">Salas Creadas</div>
+											</div>
+										</div>
+										</a>
+
+
+										<div class="infobox infobox-red">
+											<div class="infobox-icon">
+												<i class="ace-icon fa fa-users"></i>
+											</div>
+
+											<div class="infobox-data">
+												<span class="infobox-data-number"><?php $online = mysqli_query($db,"SELECT * FROM users WHERE online = '1'"); echo mysqli_num_rows($online); ?></span>
+												<div class="infobox-content">Usuarios Online</div>
+											</div>
+										</div>
+<a href="tienda.php">		
+										<div class="infobox infobox-orange">
+											<div class="infobox-icon">
+												<i class="ace-icon fa fa-key"></i>
+											</div>
+											<div class="infobox-data">
+												<span class="infobox-data-number"><?php $catalogo = mysqli_query($db,"SELECT * FROM catalog_pages WHERE min_rank = '1' AND enabled='1' AND visible='1'");  echo mysqli_num_rows($catalogo); ?></span>
+												<div class="infobox-content">Páginas en la Tienda</div>
+											</div>
+										</div>
+										</a>		
+										<div class="infobox infobox-purple">
+											<div class="infobox-icon">
+												<i class="ace-icon fa fa-globe"></i>
+											</div>
+											<div class="infobox-data">
+												<span class="infobox-data-number"><?php $groups = mysqli_query($db,"SELECT * from guilds"); echo mysqli_num_rows($groups); ?></span>
+												<div class="infobox-content">Grupos Creados</div>
+											</div>
+										</div>
+
+										<div class="space-6"></div>
 									</div>
-									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="site">Link del hotel:</label>
-										<div class="col-sm-9">
-											<input type="text" value="<?php echo $hotel_q['site']; ?>" name="site" id="site" class="col-xs-10 col-sm-5" required>
-										</div>
-									</div>
-																		<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="aka">Link di Configurazione (Hotel):</label>
-										<div class="col-sm-9">
-											<input type="text" value="<?php echo $hotel_q['aka']; ?>" name="aka" id="aka" class="col-xs-10 col-sm-5" required>
-										</div>
-									</div>
-																											<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="avatarimage">Link avatar image:</label>
-										<div class="col-sm-9">
-											<input type="text" value="<?php echo $hotel_q['avatarimage']; ?>" name="avatarimage" id="avatarimage" class="col-xs-10 col-sm-5" required>
-										</div>
-									</div>
-<div class="col-md-offset-3 col-md-9">
-											<button name="save" class="btn btn-info" type="submit">
-												<i class="ace-icon fa fa-check bigger-110"></i>
-												Salva
-											</button>
-										</div>
-									</form>
-									</div><!-- /.span -->
-								</div>
+
+									<div class="vspace-12-sm"></div>
+								</div><!-- /.row -->
 
 								<div class="hr hr32 hr-dotted"></div>
 								</div><!-- /.row -->
