@@ -6,4 +6,4 @@ To setup you need to paste this "/housekeeping" folder into "/public" folder on 
 
 This housekeeping is so easy to configure to another system.
 
--Currently in develepment
+-Currently in development
